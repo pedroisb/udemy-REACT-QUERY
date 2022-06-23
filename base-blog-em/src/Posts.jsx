@@ -1,25 +1,47 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { PostDetail } from "./PostDetail";
 
 const maxPostPage = 10;
 
-async function fetchPosts() {
+async function fetchPosts(pageNum) {
   const response = await fetch(
-    "https://jsonplaceholder.typicode.com/posts?_limit=10&_page=0"
+    `https://jsonplaceholder.typicode.com/posts?_limit=10&_page=${pageNum}`
   );
   return response.json();
 }
 
 export function Posts() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
+
+  const queryClient = useQueryClient();
+
+  // we'll use useEffect to call queryClient.prefetch(); it's a way to ensure that it will be called only and when currentPage changes
+  useEffect(() => {
+    // constraint needed to make sure that there will be data to prefetch
+    if(currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      // prefetch queryKey will need to have the same shape as the one in useQuery, since this is where react query will look to see if there's already data in cache
+      queryClient.prefetchQuery(["posts", nextPage], () => fetchPosts(nextPage));
+    }
+  }, [currentPage, queryClient]);
 
   // replace with useQuery
   // const data = [];
-  const { data, isError, error, isLoading } = useQuery("posts", fetchPosts, { staleTime: 2000 });
-  if (isLoading) return <h3>Loading...</h3>;
-  if (isError) 
+  const { data, isError, error, isLoading } = useQuery(
+    ["posts", currentPage], 
+    () => fetchPosts(currentPage), 
+    {
+      staleTime: 2000,
+      // keep past data in cache
+      keepPreviousData: true,
+    });
+  
+    if (isLoading) return <h3>Loading...</h3>;
+  
+    if (isError) 
+    
     return (
       <>
         <h3>Something went wrong!</h3>
@@ -41,11 +63,21 @@ export function Posts() {
         ))}
       </ul>
       <div className="pages">
-        <button disabled onClick={() => {}}>
+        <button
+          disabled={currentPage <= 1} 
+          onClick={() => {
+            setCurrentPage((prevState) => prevState - 1)
+          }}
+        >
           Previous page
         </button>
-        <span>Page {currentPage + 1}</span>
-        <button disabled onClick={() => {}}>
+        <span>Page {currentPage}</span>
+        <button
+          disabled={currentPage >= 10}
+          onClick={() => {
+            setCurrentPage((prevState) => prevState + 1)
+          }}
+        >
           Next page
         </button>
       </div>
