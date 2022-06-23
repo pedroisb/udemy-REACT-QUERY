@@ -28,7 +28,10 @@ export function PostDetail({ post }) {
 
   // Unlike the query fn, the mutation fn can take args
   const deleteMutation = useMutation((postId) => deletePost(postId));
-  // it could've been just () => delete(post.id) since the id is coming from props
+  // it could've been just () => delete(post.id), since the id is coming from props
+
+  // in a real scenario it would also take the new post title as an arg
+  const updateMutation = useMutation((postId) => updatePost(postId));
 
   if (isLoading) return <h3>Loading comments...</h3>;
 
@@ -50,7 +53,18 @@ export function PostDetail({ post }) {
         // jsonplaceholderAPI does not allow us to actually alter server data
         <p style={{color: 'green'}}>Success: Post has (not) been deleted!</p>
       )}
-      <button>Update title</button>
+      <button onClick={() => updateMutation.mutate(post.id)}>
+        Update title
+      </button>
+      {updateMutation.isError && (
+        <p style={{color: 'red'}}>Error: Mutation failed!</p>
+      )}
+      {updateMutation.isLoading && (
+        <p style={{color: 'purple'}}>Mutation in progress...</p>
+      )}
+      {updateMutation.isSuccess && (
+        <p style={{color: 'green'}}>Success: Post has (not) been updated</p>
+      )}
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data.map((comment) => (
