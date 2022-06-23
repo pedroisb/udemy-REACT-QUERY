@@ -27,12 +27,12 @@ export function Posts() {
     }
   }, [currentPage, queryClient]);
 
-  // replace with useQuery
-  // const data = [];
+  // isLoading vs isFetching: isFetching is true when the async func that fetches data hasn't resolved yet, whereas isLoading is true when isFetching is true + there is no data in cache
   const { data, isError, error, isLoading } = useQuery(
     ["posts", currentPage], 
     () => fetchPosts(currentPage), 
     {
+      // time before data becomes stale, in miliseconds (data being stale is one of the conditions that triggers fetch)
       staleTime: 2000,
       // keep past data in cache
       keepPreviousData: true,
