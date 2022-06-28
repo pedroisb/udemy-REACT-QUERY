@@ -9,10 +9,35 @@ const fetchUrl = async (url) => {
 };
 
 export function InfiniteSpecies() {
+  const { data, fetchNextPage, hasNextPage, isFetching, isLoading, isError, error } = useInfiniteQuery(
+    "sw-species",
+    ({ pageParam = initialUrl }) => fetchUrl(pageParam),
+    {
+      getNextPageParam: (lastPage) => lastPage.next,
+    },
+  );
+
+  if(isLoading) return <div className="loading">Loading...</div>;
+  if(isError) return <div>{error.toString()}</div>;
+
   return (
-    <InfiniteScroll
-      loadMore={}
-      hasMore={}
-    />
-    );
+    <>
+      {isFetching && <div className="loading">Loading...</div>}
+      <InfiniteScroll
+        loadMore={fetchNextPage}
+        hasMore={hasNextPage}
+      >
+        {data.pages.map(pageData => {
+          return pageData.results.map(species => {
+            return (
+            <Species 
+              key={species.name}
+              name={species.name}
+              averageLifespan={species.average_lifespan}
+              language={species.language}
+            />
+          )});
+        })}
+      </InfiniteScroll>
+    </>);
 }
