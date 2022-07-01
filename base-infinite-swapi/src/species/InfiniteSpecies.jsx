@@ -9,12 +9,20 @@ const fetchUrl = async (url) => {
 };
 
 export function InfiniteSpecies() {
-  const { data, fetchNextPage, hasNextPage, isFetching, isLoading, isError, error } = useInfiniteQuery(
-    "sw-species",
-    ({ pageParam = initialUrl }) => fetchUrl(pageParam),
-    {
-      getNextPageParam: (lastPage) => lastPage.next,
-    },
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isLoading,
+    isError,
+    error,
+    } = useInfiniteQuery(
+      "sw-species",
+      ({ pageParam = initialUrl }) => fetchUrl(pageParam),
+      {
+        getNextPageParam: (lastPage) => lastPage.next || undefined,
+      },
   );
 
   if(isLoading) return <div className="loading">Loading...</div>;

@@ -13,7 +13,9 @@ export function InfinitePeople() {
     "sw-people", //queryKey
     ({ pageParam = initialUrl }) => fetchUrl(pageParam), //queryFn
     {
-      getNextPageParam: (lastPage) => lastPage.next || undefined, //sw-api conveniently has a next prop
+      getNextPageParam: (lastPage) => lastPage.next || undefined, 
+      //sw-api conveniently has a next prop
+      // alternatively set to undefined because starwars sets next to null when theres no more pages, and hasNextPage sets to false when pagePram is undefined (had no difference when I forgot it though)
     },
   );
 
