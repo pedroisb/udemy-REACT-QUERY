@@ -1,10 +1,15 @@
 import { Spinner, Text } from '@chakra-ui/react';
 import { ReactElement } from 'react';
+import { useIsFetching } from 'react-query';
 
 export function Loading(): ReactElement {
   // will use React Query `useIsFetching` to determine whether or not to display
-  const isFetching = false; // for now, just don't display
+  // const isFetching = false; // for now, just don't display
 
+  // useIsFetching returns an integer representing the number of query calls that are on a fetching state
+  const isFetching = useIsFetching();
+
+  // as per previous comment: isFecthing will be falsy only if it equals 0
   const display = isFetching ? 'inherit' : 'none';
 
   return (
