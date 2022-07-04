@@ -11,9 +11,21 @@ async function getTreatments(): Promise<Treatment[]> {
   return data;
 }
 
-// here we established [] as a default value to be shown while the promise is still pending
 export function useTreatments(): Treatment[] {
+  // search Chakra UI's useToast for better understanding
+  const toast = useCustomToast();
+
+  // here we established [] as a default value to be shown while the promise is still pending
   const fallback = [];
-  const { data = [] } = useQuery(queryKeys.treatments, getTreatments);
+  const { data = fallback } = useQuery(queryKeys.treatments, getTreatments, {
+    onError: (error) => {
+      // setting error title conditionally - if error is an instance of javascript's Error class
+      const title =
+        error instanceof Error
+          ? error.message
+          : 'error connecting to the server';
+      toast({ title, status: 'error' });
+    },
+  });
   return data;
 }
