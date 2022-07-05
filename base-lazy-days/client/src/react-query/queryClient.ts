@@ -6,9 +6,12 @@ import { theme } from '../theme';
 
 const toast = createStandaloneToast({ theme });
 
+let i = 0;
+
 function queryErrorHandler(error: unknown): void {
   // error is type unknown because in js, anything can be an error (e.g. throw(5))
-  const id = 'react-query-error';
+  // PS.: this hardcoded id leads to "Warning: Encountered two children with the same key, `react-query-error`" error when multiple errors occur -> implemented solution seen in lecture comments
+  const id = `react-query-error${(i -= 1)}`;
   const title =
     error instanceof Error ? error.message : 'error connecting to server';
 
