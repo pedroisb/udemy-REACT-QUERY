@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import type { Treatment } from '../../../../../shared/types';
 import { axiosInstance } from '../../../axiosInstance';
@@ -32,4 +32,10 @@ export function useTreatments(): Treatment[] {
   // }
 
   return data;
+}
+
+export function usePrefetchTreatments(): void {
+  const queryClient = useQueryClient();
+  // the query key is of fundamental importance, for it is going to tell which data is a match for the useQuery call passed in the 2nd arg
+  queryClient.prefetchQuery(queryKeys.treatments, getTreatments);
 }
